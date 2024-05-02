@@ -4,34 +4,31 @@ import pickle
 app = Flask(__name__)
 
 # Load the trained model
-with open('best_modelefinale.pkl', 'rb') as file:
+with open('best_modelefinale123.pkl', 'rb') as file:
     model = pickle.load(file)
 
 # Define API endpoint
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
-    pression_1 = data['pression_1']
-    heurefonction = data['heurefonction']
-    pression_2 = data['pression_2']
-    temperature = data['temperature']
-    pointderose = data['pointderose']
-    tauxdecharge = data['tauxdecharge']
-    id = data['id']
-    local_id = data['local_id']
+    rpm = data['rpm']
+    motor_power = data['motor_power']
+    torque = data['torque']
+    outlet_pressure_bar = data['outlet_pressure_bar']
+    wpump_outlet_press = data['wpump_outlet_press']
+    wpump_power = data['wpump_power']
+    water_flow = data['water_flow']
+    oilpump_power = data['oilpump_power']
     
     # Make prediction
-    input_data = [[id, local_id, pression_1, heurefonction, pression_2, temperature, pointderose, tauxdecharge]]
-    predicted_debit = model.predict(input_data)[0]
+    input_data = [[rpm, motor_power, torque, outlet_pressure_bar, wpump_outlet_press, wpump_power, water_flow, oilpump_power]]
+    predicted_air_flow = model.predict(input_data)[0]
     
-    # Calculate total production
-    total_production = predicted_debit * heurefonction
     
     # Return prediction and total production as JSON response
     return jsonify({
-        'debit_de_production_air': predicted_debit,
-        'total_production': total_production
+        'debit_de_air_flow': predicted_air_flow
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='92.168.1.19',port=6000)
